@@ -29,9 +29,19 @@ create table if not exists public.storefront_images (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.hero_slides (
+  id uuid primary key default gen_random_uuid(),
+  image_url text not null,
+  image_alt text not null default '',
+  storage_path text unique,
+  sort_order integer not null default 0 check (sort_order >= 0),
+  created_at timestamptz not null default now()
+);
+
 alter table public.products enable row level security;
 alter table public.category_images enable row level security;
 alter table public.storefront_images enable row level security;
+alter table public.hero_slides enable row level security;
 
 create table if not exists public.store_admins (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -101,6 +111,21 @@ create policy "Store admins can manage storefront images"
 
 grant select on public.storefront_images to anon, authenticated;
 grant insert, update, delete on public.storefront_images to authenticated;
+
+drop policy if exists "Anyone can view hero slides" on public.hero_slides;
+create policy "Anyone can view hero slides"
+  on public.hero_slides for select
+  using (true);
+
+drop policy if exists "Store admins can manage hero slides" on public.hero_slides;
+create policy "Store admins can manage hero slides"
+  on public.hero_slides for all
+  to authenticated
+  using (public.is_store_admin())
+  with check (public.is_store_admin());
+
+grant select on public.hero_slides to anon, authenticated;
+grant insert, update, delete on public.hero_slides to authenticated;
 
 insert into public.products (id, name, detail, price, image_url, image_alt, badge, category, stock)
 values

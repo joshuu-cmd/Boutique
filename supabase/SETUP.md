@@ -32,7 +32,7 @@ In the admin dashboard, choose one or more photos under **Category photos** and 
 
 ## Enable admin editing for every home-page photo
 
-The admin dashboard manages product photos in **Products & photos**, category-card photos in **Category photos**, and the welcome/story feature photos in **Storefront feature photos**. On an existing project, run `supabase/migrations/20260927_storefront_images.sql` in the Supabase SQL Editor. This creates the feature-photo table and its public-read/admin-write policies. New projects get the table and policies from `supabase/schema.sql`.
+The admin dashboard manages product photos in **Products & photos**, category-card photos in **Category photos**, the rotating welcome banner in **Welcome hero slideshow**, and the story photo in **Storefront feature photo**. On an existing project, run `supabase/migrations/20260927_storefront_images.sql` first if you have not already, then run `supabase/migrations/20260927_hero_slides.sql`. The hero migration creates the slideshow table and policies and carries the currently saved hero photo into the slideshow. New projects get the table and policies from `supabase/schema.sql`.
 
 ## 2. Configure the website
 
