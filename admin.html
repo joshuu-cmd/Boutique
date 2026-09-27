@@ -85,6 +85,34 @@
       return fallback;
     }
 
+    function describeUploadError(error, stage) {
+      const parts = [
+        typeof error?.message === "string" ? error.message : "",
+        typeof error?.error === "string" ? error.error : "",
+        typeof error?.details === "string" ? error.details : "",
+        typeof error?.hint === "string" ? error.hint : "",
+        error?.statusCode ? `status ${error.statusCode}` : error?.status ? `status ${error.status}` : "",
+        error?.code && error.code !== error.message ? `code ${error.code}` : ""
+      ].filter(Boolean);
+      const detail = parts.length
+        ? [...new Set(parts)].join(" — ")
+        : error instanceof Error ? error.message : "No additional error details were returned.";
+      const lowerDetail = detail.toLowerCase();
+      if (lowerDetail.includes("bucket not found") || lowerDetail.includes("bucket_id")) {
+        return `${stage} failed: the product-images storage bucket is missing. Run supabase/schema.sql in the Supabase SQL Editor, or create a public product-images bucket that allows JPEG, PNG, WebP, and GIF files.`;
+      }
+      if (lowerDetail.includes("row-level security") || lowerDetail.includes("violates row-level security") || lowerDetail.includes("not authorized") || lowerDetail.includes("unauthorized")) {
+        return `${stage} failed: Supabase denied access. Confirm this account is in public.store_admins and the admin storage/table policies from supabase/schema.sql are installed. Details: ${detail}`;
+      }
+      if (lowerDetail.includes("category_images") && (lowerDetail.includes("does not exist") || lowerDetail.includes("not found") || lowerDetail.includes("schema cache"))) {
+        return `${stage} failed: the category photo table is missing. Run supabase/migrations/20260927_category_images.sql in the Supabase SQL Editor. Details: ${detail}`;
+      }
+      if (lowerDetail.includes("payload too large") || lowerDetail.includes("file size") || lowerDetail.includes("maximum") || lowerDetail.includes("413")) {
+        return `${stage} failed: the selected image exceeds the storage file-size limit. Each image must be smaller than 8 MB. Details: ${detail}`;
+      }
+      return `${stage} failed: ${detail}`;
+    }
+
     function getCategoryImagesErrorMessage(error) {
       const message = getErrorMessage(error, "Could not load category photos.");
       if (error?.code === "42P01" || error?.code === "PGRST205" || /category_images.*(?:does not exist|not found)/i.test(message)) {
@@ -282,22 +310,29 @@
           message.textContent = `Uploading ${files.length} photo${files.length === 1 ? "" : "s"}…`;
           const uploaded = [];
           let published = false;
+          let stage = "Uploading photo to Supabase Storage";
           try {
             for (const file of files) uploaded.push(await uploadCategoryImage(file, category.value));
             const sortOrder = currentCategoryImages.filter((image) => image.category === category.value).length;
             const rows = uploaded.map((image, index) => ({ ...image, sort_order: sortOrder + index }));
+            stage = "Saving photo details";
             const { error } = await supabase.from("category_images").insert(rows);
             if (error) throw error;
             published = true;
             fileInput.value = "";
+            stage = "Refreshing the category photo list";
             await loadProducts();
             setCategoryMessage(category.value, `${files.length} photo${files.length === 1 ? "" : "s"} published.`);
           } catch (error) {
-            let detail = error instanceof Error ? error.message : "Could not upload category photos.";
+            let detail = describeUploadError(error, stage);
             if (uploaded.length && !published) {
-              const { error: cleanupError } = await supabase.storage.from("product-images")
-                .remove(uploaded.map((image) => image.storage_path));
-              if (cleanupError) detail += ` Uploaded files could not be cleaned up: ${cleanupError.message}`;
+              try {
+                const { error: cleanupError } = await supabase.storage.from("product-images")
+                  .remove(uploaded.map((image) => image.storage_path));
+                if (cleanupError) detail += ` Uploaded files could not be cleaned up: ${describeUploadError(cleanupError, "Storage cleanup")}`;
+              } catch (cleanupError) {
+                detail += ` Storage cleanup also failed: ${describeUploadError(cleanupError, "Storage cleanup")}`;
+              }
             }
             message.textContent = detail;
           } finally {
