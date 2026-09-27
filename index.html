@@ -85,6 +85,19 @@
         if (current?.timer) window.clearInterval(current.timer);
         image.dataset.fallbackSrc ||= image.src;
         image.dataset.fallbackAlt ||= image.alt;
+        if (!image.dataset.fallbackHandler) {
+          image.dataset.fallbackHandler = "true";
+          image.addEventListener("error", () => {
+            const fallbackSrc = image.dataset.fallbackSrc;
+            if (!fallbackSrc || image.src === fallbackSrc) return;
+            const state = categorySlides.get(image.dataset.categoryImage);
+            if (state?.timer) window.clearInterval(state.timer);
+            categorySlides.set(image.dataset.categoryImage, { ...state, timer: null });
+            image.src = fallbackSrc;
+            image.alt = image.dataset.fallbackAlt || image.dataset.categoryImage;
+            showToast(`A ${image.dataset.categoryImage} photo could not be loaded. Showing the default image instead.`);
+          });
+        }
         image.src = slides[0].image_url;
         image.alt = slides[0].image_alt || category;
         image.classList.remove("changing");
@@ -150,15 +163,23 @@
         return;
       }
       supabase ??= createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      const [productResult, categoryImageResult] = await Promise.all([
-        supabase.from("products")
-          .select("id,name,detail,price,image_url,image_alt,badge,category,stock")
-          .order("id"),
-        supabase.from("category_images")
-          .select("category,image_url,image_alt,sort_order,created_at")
-          .order("sort_order")
-          .order("created_at")
-      ]);
+      let productResult;
+      let categoryImageResult;
+      try {
+        [productResult, categoryImageResult] = await Promise.all([
+          supabase.from("products")
+            .select("id,name,detail,price,image_url,image_alt,badge,category,stock")
+            .order("id"),
+          supabase.from("category_images")
+            .select("category,image_url,image_alt,sort_order,created_at")
+            .order("sort_order")
+            .order("created_at")
+        ]);
+      } catch (error) {
+        statusNodes.forEach((node) => { node.textContent = "Availability unavailable"; });
+        showToast(`Could not connect to the store: ${error instanceof Error ? error.message : String(error)}`);
+        return;
+      }
       if (productResult.error) {
         statusNodes.forEach((node) => { node.textContent = "Availability unavailable"; });
         showToast(`Could not load store products: ${productResult.error.message}`);

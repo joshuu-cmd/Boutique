@@ -17,6 +17,7 @@
     .dashboard[hidden],.login[hidden]{display:none}.dashboard-head{display:flex;justify-content:space-between;align-items:end;gap:15px}.summary{display:flex;gap:10px;margin:22px 0}.summary-card{min-width:140px;padding:12px 16px;background:var(--paper);border:1px solid var(--line)}.summary-card strong{display:block;font:500 23px var(--serif)}.summary-card span{color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
     .section-heading{margin:33px 0 14px}.section-heading h2,.stock-panel h2{margin:0;font:500 26px var(--serif)}.section-heading p,.stock-panel>p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.7}
     .category-list{display:grid;gap:14px}.category-editor{padding:18px;background:var(--paper);border:1px solid var(--line)}.category-editor h3{margin:0 0 12px;font:500 18px var(--serif)}.category-upload{display:flex;align-items:center;flex-wrap:wrap;gap:10px}.category-upload input{max-width:100%;font-size:10px}.category-upload .primary:disabled:not(.busy){cursor:not-allowed}.category-upload-message{color:var(--olive);font-size:10px}.category-photo-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:14px}.category-photo{min-width:0;padding:7px;border:1px solid var(--line);background:white}.category-photo img{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:var(--cream)}.category-photo button{width:100%;margin-top:7px;padding:7px 4px;border:1px solid var(--line);background:transparent;font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}.category-photo button:hover{background:var(--ink);color:white}.category-empty{margin:13px 0 0;color:var(--muted);font-size:10px}
+    .category-selection-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;width:100%}.category-selection-preview:empty{display:none}.category-selection-preview img{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:var(--cream);border:1px solid var(--line)}
     .product-list{display:grid;gap:14px}.product-editor{padding:18px;background:var(--paper);border:1px solid var(--line)}.editor-title{margin:0 0 14px;font:500 18px var(--serif)}.editor-grid{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px}.photo-preview{display:block;width:100%;aspect-ratio:4/4.5;object-fit:cover;background:var(--cream);border:1px solid var(--line)}.file-picker{display:block;margin-top:8px;color:var(--olive);font-size:10px}.file-picker input{width:100%;margin-top:6px;font-size:10px}
     .fields{display:grid;grid-template-columns:1fr 1fr;align-content:start;gap:10px}.field.full{grid-column:1/-1}.field input,.field select{width:100%;min-height:37px;padding:8px 9px;border:1px solid var(--line);background:white;font-size:11px}.actions{grid-column:1/-1;display:flex;align-items:center;gap:12px;margin-top:3px}.editor-message{color:var(--olive);font-size:10px}
     .stock-panel{margin-top:36px;padding:18px;background:var(--paper);border:1px solid var(--line)}.stock-list{margin-top:14px}.stock-row{display:grid;grid-template-columns:1fr 110px 85px 95px;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}.stock-name{font:500 14px var(--serif)}.stock-status{color:var(--olive);font-size:10px}.stock-status.low{color:#a36b37}.stock-status.out{color:#a34d43}.stock-input{width:100%;padding:8px;border:1px solid var(--line);background:white}.stock-save{padding:8px;border:1px solid var(--ink);background:transparent;font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}.stock-save:hover{background:var(--ink);color:white}
@@ -71,6 +72,14 @@
       { value: "innerwears", label: "Innerwear" },
       { value: "tops", label: "Tops" }
     ];
+    const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
+    const IMAGE_TYPES = {
+      jpg: { mime: "image/jpeg", extension: "jpg" },
+      jpeg: { mime: "image/jpeg", extension: "jpg" },
+      png: { mime: "image/png", extension: "png" },
+      webp: { mime: "image/webp", extension: "webp" },
+      gif: { mime: "image/gif", extension: "gif" }
+    };
     let supabase;
     let currentProducts = [];
     let currentCategoryImages = [];
@@ -83,6 +92,19 @@
     function getErrorMessage(error, fallback) {
       if (error && typeof error.message === "string") return error.message;
       return fallback;
+    }
+
+    function getImageType(file) {
+      const extension = file.name.split(".").pop()?.toLowerCase() || "";
+      const mimeType = Object.values(IMAGE_TYPES).find((type) => type.mime === file.type);
+      if (mimeType || file.type) return mimeType || null;
+      return IMAGE_TYPES[extension] || null;
+    }
+
+    function getImageValidationError(file) {
+      if (!getImageType(file)) return `${file.name} is not a supported image. Choose JPEG, PNG, WebP, or GIF.`;
+      if (file.size > MAX_IMAGE_SIZE) return `${file.name} is larger than 8 MB.`;
+      return "";
     }
 
     function describeUploadError(error, stage) {
@@ -160,13 +182,14 @@
     }
 
     async function uploadImage(file, productId) {
-      if (!file.type.startsWith("image/")) throw new Error("Choose an image file.");
-      if (file.size > 8 * 1024 * 1024) throw new Error("Choose an image smaller than 8 MB.");
-      const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "jpg";
+      const imageType = getImageType(file);
+      const validationError = getImageValidationError(file);
+      if (validationError) throw new Error(validationError);
+      const extension = imageType.extension;
       const path = `${productId}/${crypto.randomUUID()}.${extension}`;
       const { data, error } = await supabase.storage.from("product-images").upload(path, file, {
         cacheControl: "3600",
-        contentType: file.type,
+        contentType: imageType.mime,
         upsert: false
       });
       if (error) throw error;
@@ -193,11 +216,14 @@
     }
 
     async function uploadCategoryImage(file, category) {
-      const extension = file.name.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() || "jpg";
+      const imageType = getImageType(file);
+      const validationError = getImageValidationError(file);
+      if (validationError) throw new Error(validationError);
+      const extension = imageType.extension;
       const path = `categories/${category}/${crypto.randomUUID()}.${extension}`;
       const { data, error } = await supabase.storage.from("product-images").upload(path, file, {
         cacheControl: "3600",
-        contentType: file.type,
+        contentType: imageType.mime,
         upsert: false
       });
       if (error) throw error;
@@ -231,6 +257,9 @@
         fileInput.accept = "image/jpeg,image/png,image/webp,image/gif";
         fileInput.multiple = true;
         fileInput.setAttribute("aria-label", `Choose photos for ${category.label}`);
+        const selectionPreview = document.createElement("div");
+        selectionPreview.className = "category-selection-preview";
+        selectionPreview.setAttribute("aria-label", `Selected ${category.label} photo previews`);
         const uploadButton = document.createElement("button");
         uploadButton.className = "primary";
         uploadButton.type = "button";
@@ -239,14 +268,35 @@
         message.className = "category-upload-message";
         if (loadError) message.textContent = loadError;
         let uploadInProgress = false;
+        let selectionObjectUrls = [];
         fileInput.addEventListener("change", () => {
-          const count = fileInput.files?.length || 0;
+          selectionObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+          selectionObjectUrls = [];
+          selectionPreview.replaceChildren();
+          const files = Array.from(fileInput.files || []);
+          const count = files.length;
           uploadButton.disabled = uploadInProgress;
-          message.textContent = count
-            ? `${count} photo${count === 1 ? "" : "s"} selected.`
-            : loadError;
+          if (!count) {
+            message.textContent = loadError;
+            return;
+          }
+          const invalidFile = files.find(getImageValidationError);
+          if (invalidFile) {
+            message.textContent = getImageValidationError(invalidFile);
+            return;
+          }
+          files.forEach((file) => {
+            const url = URL.createObjectURL(file);
+            selectionObjectUrls.push(url);
+            const preview = document.createElement("img");
+            preview.src = url;
+            preview.alt = file.name;
+            preview.title = file.name;
+            selectionPreview.append(preview);
+          });
+          message.textContent = `${count} photo${count === 1 ? "" : "s"} selected. Preview${count === 1 ? "" : "s"} shown below.`;
         });
-        upload.append(fileInput, uploadButton, message);
+        upload.append(fileInput, uploadButton, message, selectionPreview);
 
         const gallery = document.createElement("div");
         gallery.className = "category-photo-list";
@@ -296,11 +346,9 @@
             fileInput.focus();
             return;
           }
-          const invalid = files.find((file) => !file.type.startsWith("image/") || file.size > 8 * 1024 * 1024);
+          const invalid = files.find(getImageValidationError);
           if (invalid) {
-            message.textContent = !invalid.type.startsWith("image/")
-              ? `${invalid.name} is not an image file.`
-              : `${invalid.name} is larger than 8 MB.`;
+            message.textContent = getImageValidationError(invalid);
             return;
           }
           uploadInProgress = true;
@@ -320,6 +368,9 @@
             if (error) throw error;
             published = true;
             fileInput.value = "";
+            selectionObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+            selectionObjectUrls = [];
+            selectionPreview.replaceChildren();
             stage = "Refreshing the category photo list";
             await loadProducts();
             setCategoryMessage(category.value, `${files.length} photo${files.length === 1 ? "" : "s"} published.`);
@@ -369,6 +420,7 @@
         fileInput.type = "file";
         fileInput.accept = "image/jpeg,image/png,image/webp,image/gif";
         fileInput.setAttribute("aria-label", `Upload a photo for ${product.name}`);
+        let productPreviewUrl = "";
         fileLabel.append(fileInput);
         photoColumn.append(preview, fileLabel);
 
@@ -405,12 +457,21 @@
         fileInput.addEventListener("change", () => {
           const file = fileInput.files?.[0];
           if (!file) return;
-          if (!file.type.startsWith("image/") || file.size > 8 * 1024 * 1024) {
-            message.textContent = file.size > 8 * 1024 * 1024 ? "Choose an image smaller than 8 MB." : "Choose a valid image file.";
+          const validationError = getImageValidationError(file);
+          if (validationError) {
+            if (productPreviewUrl) {
+              URL.revokeObjectURL(productPreviewUrl);
+              productPreviewUrl = "";
+            }
+            preview.src = product.image_url;
+            imageUrl.input.value = product.image_url;
+            message.textContent = validationError;
             fileInput.value = "";
             return;
           }
-          preview.src = URL.createObjectURL(file);
+          if (productPreviewUrl) URL.revokeObjectURL(productPreviewUrl);
+          productPreviewUrl = URL.createObjectURL(file);
+          preview.src = productPreviewUrl;
           imageUrl.input.value = "";
           alt.input.value = file.name.replace(/\.[^.]+$/, "");
           message.textContent = "Photo ready. Save product to upload it.";
@@ -450,6 +511,10 @@
             };
             const { error } = await supabase.from("products").update(update).eq("id", product.id);
             if (error) throw error;
+            if (productPreviewUrl) {
+              URL.revokeObjectURL(productPreviewUrl);
+              productPreviewUrl = "";
+            }
             await loadProducts();
             message.textContent = "Saved and published.";
           } catch (error) {

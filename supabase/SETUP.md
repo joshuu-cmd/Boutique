@@ -26,7 +26,7 @@ The admin product editor uses the same three category values. Save a product aft
 
 ## Enable multiple category photos
 
-For projects created before category photos were added, run `supabase/migrations/20260927_category_images.sql` in the Supabase SQL Editor. New projects receive the `category_images` table and its public-read/admin-write policies from `supabase/schema.sql`.
+For projects created before category photos were added, run `supabase/migrations/20260927_category_images.sql` in the Supabase SQL Editor. It creates the `category_images` table, configures the shared image bucket, and installs the public-read/admin-write policies for category photos and image uploads. New projects receive this setup from `supabase/schema.sql`.
 
 In the admin dashboard, choose one or more photos under **Category photos** and upload them. The storefront automatically cycles through each category's uploaded photos; categories without uploads continue to use their existing default photo. Admins can remove uploaded photos from the same dashboard.
 
