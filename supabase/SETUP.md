@@ -18,6 +18,12 @@ The storefront and admin portal use Supabase Auth, the `products` table, and a p
 
    Confirm exactly one row was inserted. If it inserted zero rows, the user has not been created or the email does not match. Never allowlist an email that Ann does not control. To revoke admin access, delete her row from `public.store_admins`.
 
+## Update an existing project to the clothing categories
+
+If you already ran the earlier version of `schema.sql`, open **SQL Editor → New query**, paste in `supabase/migrations/20260927_clothing_categories.sql`, and run it once. This replaces the original four demo products and their stock with clothing examples in **Pajamas**, **Innerwear**, and **Tops**, and removes products assigned to other categories. Export any real edits to those demo products before running it. Other products already assigned to one of the three new categories are preserved. New projects should use the current `supabase/schema.sql` instead.
+
+The admin product editor uses the same three category values. Save a product after changing its category for the storefront filter to update.
+
 ## 2. Configure the website
 
 1. In **Project Settings → API**, copy the Project URL and the public anon/publishable key.

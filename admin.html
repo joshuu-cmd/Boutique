@@ -17,7 +17,7 @@
     .dashboard[hidden],.login[hidden]{display:none}.dashboard-head{display:flex;justify-content:space-between;align-items:end;gap:15px}.summary{display:flex;gap:10px;margin:22px 0}.summary-card{min-width:140px;padding:12px 16px;background:var(--paper);border:1px solid var(--line)}.summary-card strong{display:block;font:500 23px var(--serif)}.summary-card span{color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
     .section-heading{margin:33px 0 14px}.section-heading h2,.stock-panel h2{margin:0;font:500 26px var(--serif)}.section-heading p,.stock-panel>p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.7}
     .product-list{display:grid;gap:14px}.product-editor{padding:18px;background:var(--paper);border:1px solid var(--line)}.editor-title{margin:0 0 14px;font:500 18px var(--serif)}.editor-grid{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px}.photo-preview{display:block;width:100%;aspect-ratio:4/4.5;object-fit:cover;background:var(--cream);border:1px solid var(--line)}.file-picker{display:block;margin-top:8px;color:var(--olive);font-size:10px}.file-picker input{width:100%;margin-top:6px;font-size:10px}
-    .fields{display:grid;grid-template-columns:1fr 1fr;align-content:start;gap:10px}.field.full{grid-column:1/-1}.field input{width:100%;min-height:37px;padding:8px 9px;border:1px solid var(--line);background:white;font-size:11px}.actions{grid-column:1/-1;display:flex;align-items:center;gap:12px;margin-top:3px}.editor-message{color:var(--olive);font-size:10px}
+    .fields{display:grid;grid-template-columns:1fr 1fr;align-content:start;gap:10px}.field.full{grid-column:1/-1}.field input,.field select{width:100%;min-height:37px;padding:8px 9px;border:1px solid var(--line);background:white;font-size:11px}.actions{grid-column:1/-1;display:flex;align-items:center;gap:12px;margin-top:3px}.editor-message{color:var(--olive);font-size:10px}
     .stock-panel{margin-top:36px;padding:18px;background:var(--paper);border:1px solid var(--line)}.stock-list{margin-top:14px}.stock-row{display:grid;grid-template-columns:1fr 110px 85px 95px;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}.stock-name{font:500 14px var(--serif)}.stock-status{color:var(--olive);font-size:10px}.stock-status.low{color:#a36b37}.stock-status.out{color:#a34d43}.stock-input{width:100%;padding:8px;border:1px solid var(--line);background:white}.stock-save{padding:8px;border:1px solid var(--ink);background:transparent;font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}.stock-save:hover{background:var(--ink);color:white}
     .notice{min-height:18px;margin-top:10px;color:var(--olive);font-size:11px}.setup-note{margin-top:19px;color:var(--muted);font-size:10px;line-height:1.7}
     @media(max-width:620px){.topbar{height:62px}.brand{font-size:21px}.back-link,.logout{font-size:8px}main{padding:32px 13px 50px}.login{margin:30px auto;padding:22px}.login h1{font-size:31px}.dashboard-head{align-items:start}.dashboard-head h1{font-size:34px}.summary-card{min-width:0;flex:1;padding:11px}.summary-card strong{font-size:20px}.product-editor{padding:13px}.editor-grid{grid-template-columns:100px minmax(0,1fr);gap:11px}.fields{grid-template-columns:1fr;gap:8px}.field.full,.actions{grid-column:1}.actions{flex-wrap:wrap}.field input{min-height:35px;font-size:10px}.stock-panel{padding:13px}.stock-row{grid-template-columns:1fr 68px;gap:8px}.stock-status{grid-column:1}.stock-save{grid-column:2;grid-row:1/3}}
@@ -40,7 +40,7 @@
     </section>
 
     <section class="dashboard" id="dashboard" hidden>
-      <div class="dashboard-head"><div><div class="eyebrow">Boutique dashboard</div><h1>Edit your storefront</h1><p class="lede">Update product photos, names, prices, descriptions, and inventory.</p></div><button class="logout" id="sign-out" type="button">Sign out</button></div>
+      <div class="dashboard-head"><div><div class="eyebrow">Boutique dashboard</div><h1>Edit your storefront</h1><p class="lede">Update pajamas, innerwear, and tops — including product photos and inventory.</p></div><button class="logout" id="sign-out" type="button">Sign out</button></div>
       <div class="summary" aria-live="polite"><div class="summary-card"><strong id="total-units">—</strong><span>Total units</span></div><div class="summary-card"><strong id="low-stock">—</strong><span>Low or sold out</span></div></div>
       <div class="section-heading"><h2>Products &amp; photos</h2><p>Paste an image URL or upload a photo. Save to publish changes to the storefront.</p></div>
       <section class="product-list" id="product-list" aria-label="Edit products"></section>
@@ -62,11 +62,10 @@
     const stockList = document.querySelector("#stock-list");
     const stockNotice = document.querySelector("#stock-notice");
     const configMessage = document.querySelector("#config-message");
-    const PRODUCTS = [
-      { id: "sunday-dress", category: "Clothing" },
-      { id: "shoulder-bag", category: "Accessories" },
-      { id: "golden-hoops", category: "Accessories" },
-      { id: "sunday-candle", category: "Home & gifts" }
+    const CATEGORIES = [
+      { value: "pajamas", label: "Pajamas" },
+      { value: "innerwears", label: "Innerwear" },
+      { value: "tops", label: "Tops" }
     ];
     let supabase;
     let currentProducts = [];
@@ -93,6 +92,25 @@
       }
       wrapper.append(label, input);
       return { wrapper, input };
+    }
+
+    function makeCategoryField(value) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "field";
+      const label = document.createElement("label");
+      label.textContent = "Category";
+      const select = document.createElement("select");
+      select.id = `category-${crypto.randomUUID()}`;
+      label.htmlFor = select.id;
+      CATEGORIES.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.value;
+        option.textContent = category.label;
+        select.append(option);
+      });
+      if (CATEGORIES.some((category) => category.value === value)) select.value = value;
+      wrapper.append(label, select);
+      return { wrapper, select };
     }
 
     async function uploadImage(file, productId) {
@@ -150,11 +168,12 @@
         const name = makeField("Product name", product.name);
         const detail = makeField("Short description", product.detail);
         const price = makeField("Price ($)", product.price, "number");
+        const category = makeCategoryField(product.category);
         const badge = makeField("Photo label (optional)", product.badge);
         const imageUrl = makeField("Photo URL", product.image_url, "url", true);
         imageUrl.input.placeholder = "https://example.com/product-photo.jpg";
         const alt = makeField("Photo description", product.image_alt, "text", true);
-        [name, detail, price, badge, imageUrl, alt].forEach(({ wrapper }) => fields.append(wrapper));
+        [name, detail, price, category, badge, imageUrl, alt].forEach(({ wrapper }) => fields.append(wrapper));
 
         const actions = document.createElement("div");
         actions.className = "actions";
@@ -214,6 +233,7 @@
               name: productName,
               detail: detail.input.value.trim(),
               price: amount,
+              category: category.select.value,
               image_url: finalImageUrl,
               image_alt: alt.input.value.trim() || productName,
               badge: badge.input.value.trim(),

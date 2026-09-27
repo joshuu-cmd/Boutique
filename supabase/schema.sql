@@ -6,7 +6,7 @@ create table if not exists public.products (
   image_url text not null,
   image_alt text not null default '',
   badge text not null default '',
-  category text not null,
+  category text not null check (category in ('pajamas', 'innerwears', 'tops')),
   stock integer not null default 0 check (stock >= 0),
   updated_at timestamptz not null default now()
 );
@@ -54,14 +54,14 @@ grant insert, update, delete on public.products to authenticated;
 
 insert into public.products (id, name, detail, price, image_url, image_alt, badge, category, stock)
 values
-  ('sunday-dress', 'The Sunday Midi Dress', 'Soft cotton · Sage', 88,
-   'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=700&q=80', 'The Sunday Midi Dress', 'Just arrived', 'clothing', 12),
-  ('shoulder-bag', 'The Everyday Shoulder Bag', 'Vegan leather · Toffee', 74,
-   'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=700&q=80', 'The Everyday Shoulder Bag', 'Bestseller', 'accessories', 8),
-  ('golden-hoops', 'Golden Hour Hoops', '14k gold vermeil', 42,
-   'https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=700&q=80', 'Golden Hour Hoops', '', 'accessories', 15),
-  ('sunday-candle', 'Sunday Morning Candle', 'Hand-poured · 8 oz', 32,
-   'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=700&q=80', 'Sunday Morning Candle', 'Small batch', 'home', 10)
+  ('cotton-pajama-set', 'Cloud Soft Cotton Pajama Set', 'Breathable cotton · Cream', 68,
+   'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=700&q=80', 'Cloud Soft Cotton Pajama Set', 'Just arrived', 'pajamas', 12),
+  ('lounge-pajama-set', 'The Sunday Lounge Pajama Set', 'Soft modal · Sage', 74,
+   'https://images.unsplash.com/photo-1596755389378-c31d21fd1273?auto=format&fit=crop&w=700&q=80', 'The Sunday Lounge Pajama Set', 'Bestseller', 'pajamas', 8),
+  ('everyday-innerwear', 'Everyday Comfort Innerwear', 'Soft stretch · Neutral', 36,
+   'https://images.unsplash.com/photo-1580237072617-771c3ecc4a24?auto=format&fit=crop&w=700&q=80', 'Everyday Comfort Innerwear', '', 'innerwears', 15),
+  ('easy-linen-top', 'The Easy Linen Top', 'Linen blend · White', 52,
+   'https://images.unsplash.com/photo-1551163943-3f6a855d1153?auto=format&fit=crop&w=700&q=80', 'The Easy Linen Top', 'Small batch', 'tops', 10)
 on conflict (id) do nothing;
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
