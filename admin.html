@@ -80,6 +80,19 @@
       dashboard.hidden = !authenticated;
     }
 
+    function getErrorMessage(error, fallback) {
+      if (error && typeof error.message === "string") return error.message;
+      return fallback;
+    }
+
+    function getCategoryImagesErrorMessage(error) {
+      const message = getErrorMessage(error, "Could not load category photos.");
+      if (error?.code === "42P01" || error?.code === "PGRST205" || /category_images.*(?:does not exist|not found)/i.test(message)) {
+        return "Category photo storage is not set up yet. Run supabase/migrations/20260927_category_images.sql in the Supabase SQL Editor, then reload this page.";
+      }
+      return `Category photos could not be loaded: ${message}`;
+    }
+
     function makeField(labelText, value, type = "text", full = false) {
       const wrapper = document.createElement("div");
       wrapper.className = `field${full ? " full" : ""}`;
@@ -144,12 +157,11 @@
           .order("created_at")
       ]);
       if (productError) throw productError;
-      if (imageError) throw imageError;
       currentProducts = products;
-      currentCategoryImages = images;
-      renderCategoryImages();
       renderProducts();
       renderStock();
+      currentCategoryImages = imageError ? [] : images;
+      renderCategoryImages(imageError ? getCategoryImagesErrorMessage(imageError) : "");
     }
 
     async function uploadCategoryImage(file, category) {
@@ -176,7 +188,7 @@
       if (message) message.textContent = text;
     }
 
-    function renderCategoryImages() {
+    function renderCategoryImages(loadError = "") {
       categoryList.replaceChildren();
       CATEGORIES.forEach((category) => {
         const card = document.createElement("article");
@@ -195,8 +207,10 @@
         uploadButton.className = "primary";
         uploadButton.type = "button";
         uploadButton.textContent = "Upload selected photos";
+        uploadButton.disabled = Boolean(loadError);
         const message = document.createElement("span");
         message.className = "category-upload-message";
+        if (loadError) message.textContent = loadError;
         upload.append(fileInput, uploadButton, message);
 
         const gallery = document.createElement("div");
@@ -494,29 +508,38 @@
           return;
         }
         loginMessage.textContent = "Checking admin access…";
+        let isAdmin;
         try {
-          const { data: isAdmin, error } = await supabase.rpc("is_store_admin");
+          const { data, error } = await supabase.rpc("is_store_admin");
           if (error) throw error;
-          if (isAdmin !== true) {
-            await supabase.auth.signOut();
-            setAuthenticated(false);
-            loginMessage.textContent = "This account is not authorized to manage the store.";
-            return;
-          }
-          setAuthenticated(true);
-          loginMessage.textContent = "";
+          isAdmin = data;
+        } catch (error) {
+          setAuthenticated(false);
+          loginMessage.textContent = `Could not verify admin access: ${getErrorMessage(error, "Check the Supabase connection and is_store_admin function.")}`;
+          return;
+        }
+        if (isAdmin !== true) {
+          const { error } = await supabase.auth.signOut();
+          setAuthenticated(false);
+          loginMessage.textContent = error
+            ? `This account is not authorized to manage the store. Sign-out failed: ${error.message}`
+            : "This account is not authorized to manage the store.";
+          return;
+        }
+        setAuthenticated(true);
+        loginMessage.textContent = "";
+        try {
           await loadProducts();
           stockNotice.textContent = "";
         } catch (error) {
-          setAuthenticated(false);
-          loginMessage.textContent = error instanceof Error ? error.message : "Could not verify admin access.";
+          stockNotice.textContent = `Admin access verified, but products could not be loaded: ${getErrorMessage(error, "Check the products table and Supabase permissions.")}`;
         }
       }
       supabase.auth.onAuthStateChange((_event, session) => {
         window.setTimeout(() => handleSession(session), 0);
       });
       supabase.auth.getSession().then(({ data, error }) => {
-        if (error) loginMessage.textContent = error.message;
+        if (error) loginMessage.textContent = `Could not load sign-in session: ${error.message}`;
         else window.setTimeout(() => handleSession(data.session), 0);
       });
     }
