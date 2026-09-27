@@ -24,6 +24,12 @@ If you already ran the earlier version of `schema.sql`, open **SQL Editor → Ne
 
 The admin product editor uses the same three category values. Save a product after changing its category for the storefront filter to update.
 
+## Enable multiple category photos
+
+For projects created before category photos were added, run `supabase/migrations/20260927_category_images.sql` in the Supabase SQL Editor. New projects receive the `category_images` table and its public-read/admin-write policies from `supabase/schema.sql`.
+
+In the admin dashboard, choose one or more photos under **Category photos** and upload them. The storefront automatically cycles through each category's uploaded photos; categories without uploads continue to use their existing default photo. Admins can remove uploaded photos from the same dashboard.
+
 ## 2. Configure the website
 
 1. In **Project Settings → API**, copy the Project URL and the public anon/publishable key.
