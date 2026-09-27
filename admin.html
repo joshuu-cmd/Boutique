@@ -203,12 +203,6 @@
         fileInput.accept = "image/jpeg,image/png,image/webp,image/gif";
         fileInput.multiple = true;
         fileInput.setAttribute("aria-label", `Choose photos for ${category.label}`);
-        fileInput.addEventListener("change", () => {
-          const count = fileInput.files?.length || 0;
-          message.textContent = count
-            ? `${count} photo${count === 1 ? "" : "s"} selected.`
-            : loadError;
-        });
         const uploadButton = document.createElement("button");
         uploadButton.className = "primary";
         uploadButton.type = "button";
@@ -216,6 +210,14 @@
         const message = document.createElement("span");
         message.className = "category-upload-message";
         if (loadError) message.textContent = loadError;
+        let uploadInProgress = false;
+        fileInput.addEventListener("change", () => {
+          const count = fileInput.files?.length || 0;
+          uploadButton.disabled = uploadInProgress;
+          message.textContent = count
+            ? `${count} photo${count === 1 ? "" : "s"} selected.`
+            : loadError;
+        });
         upload.append(fileInput, uploadButton, message);
 
         const gallery = document.createElement("div");
@@ -273,8 +275,10 @@
               : `${invalid.name} is larger than 8 MB.`;
             return;
           }
+          uploadInProgress = true;
           uploadButton.disabled = true;
           uploadButton.classList.add("busy");
+          uploadButton.setAttribute("aria-busy", "true");
           message.textContent = `Uploading ${files.length} photo${files.length === 1 ? "" : "s"}…`;
           const uploaded = [];
           let published = false;
@@ -297,8 +301,10 @@
             }
             message.textContent = detail;
           } finally {
+            uploadInProgress = false;
             uploadButton.disabled = false;
             uploadButton.classList.remove("busy");
+            uploadButton.removeAttribute("aria-busy");
           }
         });
         card.append(title, upload, gallery);
