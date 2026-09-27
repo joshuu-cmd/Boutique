@@ -793,7 +793,7 @@
         fields.className = "fields";
         const name = makeField("Product name", product.name);
         const detail = makeField("Short description", product.detail);
-        const price = makeField("Price ($)", product.price, "number");
+        const price = makeField("Price (KSh)", product.price, "number");
         const category = makeCategoryField(product.category);
         const badge = makeField("Photo label (optional)", product.badge);
         const imageUrl = makeField("Photo URL", product.image_url, "url", true);
