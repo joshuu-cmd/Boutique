@@ -203,12 +203,16 @@
         fileInput.accept = "image/jpeg,image/png,image/webp,image/gif";
         fileInput.multiple = true;
         fileInput.setAttribute("aria-label", `Choose photos for ${category.label}`);
+        fileInput.addEventListener("change", () => {
+          const count = fileInput.files?.length || 0;
+          message.textContent = count
+            ? `${count} photo${count === 1 ? "" : "s"} selected.`
+            : loadError;
+        });
         const uploadButton = document.createElement("button");
         uploadButton.className = "primary";
         uploadButton.type = "button";
         uploadButton.textContent = "Upload selected photos";
-        uploadButton.disabled = Boolean(loadError);
-        uploadButton.title = loadError;
         const message = document.createElement("span");
         message.className = "category-upload-message";
         if (loadError) message.textContent = loadError;
