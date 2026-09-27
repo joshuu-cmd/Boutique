@@ -16,13 +16,14 @@
     .login{max-width:430px;margin:45px auto;padding:30px;background:var(--paper);border:1px solid var(--line)}.login h1{font-size:35px}.login-fields{display:grid;gap:14px;margin-top:23px}.field{display:grid;gap:6px}.field label{color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase}.field input{width:100%;min-height:42px;padding:10px;border:1px solid var(--line);background:white}.field input:focus,.stock-input:focus{outline:2px solid #aab08e;outline-offset:1px}.primary{min-height:41px;padding:0 17px;border:1px solid var(--ink);background:var(--ink);color:white;font-size:9px;letter-spacing:.11em;text-transform:uppercase;cursor:pointer}.primary:hover{background:transparent;color:var(--ink)}.primary:disabled{opacity:.55;cursor:wait}.private-note{margin:16px 0 0;color:var(--muted);font-size:10px;line-height:1.65}
     .dashboard[hidden],.login[hidden]{display:none}.dashboard-head{display:flex;justify-content:space-between;align-items:end;gap:15px}.summary{display:flex;gap:10px;margin:22px 0}.summary-card{min-width:140px;padding:12px 16px;background:var(--paper);border:1px solid var(--line)}.summary-card strong{display:block;font:500 23px var(--serif)}.summary-card span{color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
     .section-heading{margin:33px 0 14px}.section-heading h2,.stock-panel h2{margin:0;font:500 26px var(--serif)}.section-heading p,.stock-panel>p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.7}
+    .site-image-list{display:grid;gap:14px}.site-image-editor{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px;padding:18px;background:var(--paper);border:1px solid var(--line)}.site-image-preview{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--cream);border:1px solid var(--line)}.site-image-fields{display:grid;align-content:start;gap:10px}.site-image-actions{display:flex;align-items:center;gap:12px}.site-image-message{color:var(--olive);font-size:10px}
     .category-list{display:grid;gap:14px}.category-editor{padding:18px;background:var(--paper);border:1px solid var(--line)}.category-editor h3{margin:0 0 12px;font:500 18px var(--serif)}.category-upload{display:flex;align-items:center;flex-wrap:wrap;gap:10px}.category-upload input{max-width:100%;font-size:10px}.category-upload .primary:disabled:not(.busy){cursor:not-allowed}.category-upload-message{color:var(--olive);font-size:10px}.category-photo-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:14px}.category-photo{min-width:0;padding:7px;border:1px solid var(--line);background:white}.category-photo img{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:var(--cream)}.category-photo button{width:100%;margin-top:7px;padding:7px 4px;border:1px solid var(--line);background:transparent;font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}.category-photo button:hover{background:var(--ink);color:white}.category-empty{margin:13px 0 0;color:var(--muted);font-size:10px}
     .category-selection-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;width:100%}.category-selection-preview:empty{display:none}.category-selection-preview img{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:var(--cream);border:1px solid var(--line)}
     .product-list{display:grid;gap:14px}.product-editor{padding:18px;background:var(--paper);border:1px solid var(--line)}.editor-title{margin:0 0 14px;font:500 18px var(--serif)}.editor-grid{display:grid;grid-template-columns:170px minmax(0,1fr);gap:18px}.photo-preview{display:block;width:100%;aspect-ratio:4/4.5;object-fit:cover;background:var(--cream);border:1px solid var(--line)}.file-picker{display:block;margin-top:8px;color:var(--olive);font-size:10px}.file-picker input{width:100%;margin-top:6px;font-size:10px}
     .fields{display:grid;grid-template-columns:1fr 1fr;align-content:start;gap:10px}.field.full{grid-column:1/-1}.field input,.field select{width:100%;min-height:37px;padding:8px 9px;border:1px solid var(--line);background:white;font-size:11px}.actions{grid-column:1/-1;display:flex;align-items:center;gap:12px;margin-top:3px}.editor-message{color:var(--olive);font-size:10px}
     .stock-panel{margin-top:36px;padding:18px;background:var(--paper);border:1px solid var(--line)}.stock-list{margin-top:14px}.stock-row{display:grid;grid-template-columns:1fr 110px 85px 95px;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}.stock-name{font:500 14px var(--serif)}.stock-status{color:var(--olive);font-size:10px}.stock-status.low{color:#a36b37}.stock-status.out{color:#a34d43}.stock-input{width:100%;padding:8px;border:1px solid var(--line);background:white}.stock-save{padding:8px;border:1px solid var(--ink);background:transparent;font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}.stock-save:hover{background:var(--ink);color:white}
     .notice{min-height:18px;margin-top:10px;color:var(--olive);font-size:11px}.setup-note{margin-top:19px;color:var(--muted);font-size:10px;line-height:1.7}
-    @media(max-width:620px){.topbar{height:62px}.brand{font-size:21px}.back-link,.logout{font-size:8px}main{padding:32px 13px 50px}.login{margin:30px auto;padding:22px}.login h1{font-size:31px}.dashboard-head{align-items:start}.dashboard-head h1{font-size:34px}.summary-card{min-width:0;flex:1;padding:11px}.product-editor{padding:13px}.editor-grid{grid-template-columns:100px minmax(0,1fr);gap:11px}.fields{grid-template-columns:1fr;gap:8px}.field.full,.actions{grid-column:1}.actions{flex-wrap:wrap}.field input{min-height:35px;font-size:10px}.category-editor{padding:13px}.category-upload{align-items:flex-start;flex-direction:column}.stock-panel{padding:13px}.stock-row{grid-template-columns:1fr 68px;gap:8px}.stock-status{grid-column:1}.stock-save{grid-column:2;grid-row:1/3}}
+    @media(max-width:620px){.topbar{height:62px}.brand{font-size:21px}.back-link,.logout{font-size:8px}main{padding:32px 13px 50px}.login{margin:30px auto;padding:22px}.login h1{font-size:31px}.dashboard-head{align-items:start}.dashboard-head h1{font-size:34px}.summary-card{min-width:0;flex:1;padding:11px}.product-editor{padding:13px}.editor-grid{grid-template-columns:100px minmax(0,1fr);gap:11px}.fields{grid-template-columns:1fr;gap:8px}.field.full,.actions{grid-column:1}.actions{flex-wrap:wrap}.field input{min-height:35px;font-size:10px}.site-image-editor{grid-template-columns:100px minmax(0,1fr);gap:11px;padding:13px}.site-image-fields{min-width:0}.site-image-actions{align-items:flex-start;flex-direction:column}.category-editor{padding:13px}.category-upload{align-items:flex-start;flex-direction:column}.stock-panel{padding:13px}.stock-row{grid-template-columns:1fr 68px;gap:8px}.stock-status{grid-column:1}.stock-save{grid-column:2;grid-row:1/3}}
   </style>
 </head>
 <body>
@@ -44,6 +45,8 @@
     <section class="dashboard" id="dashboard" hidden>
       <div class="dashboard-head"><div><div class="eyebrow">Boutique dashboard</div><h1>Edit your storefront</h1><p class="lede">Update pajamas, innerwear, and tops — including product photos and inventory.</p></div><button class="logout" id="sign-out" type="button">Sign out</button></div>
       <div class="summary" aria-live="polite"><div class="summary-card"><strong id="total-units">—</strong><span>Total units</span></div><div class="summary-card"><strong id="low-stock">—</strong><span>Low or sold out</span></div></div>
+      <div class="section-heading"><h2>Storefront feature photos</h2><p>Update the welcome hero photo and the image in the story section.</p></div>
+      <section class="site-image-list" id="site-image-list" aria-label="Edit storefront feature photos"></section>
       <div class="section-heading"><h2>Category photos</h2><p>Upload one or more photos for each category. The storefront will rotate through them automatically.</p></div>
       <section class="category-list" id="category-list" aria-label="Manage category photos"></section>
       <div class="section-heading"><h2>Products &amp; photos</h2><p>Paste an image URL or upload a photo. Save to publish changes to the storefront.</p></div>
@@ -62,6 +65,7 @@
     const loginButton = document.querySelector("#login-button");
     const loginMessage = document.querySelector("#login-message");
     const dashboard = document.querySelector("#dashboard");
+    const siteImageList = document.querySelector("#site-image-list");
     const categoryList = document.querySelector("#category-list");
     const productList = document.querySelector("#product-list");
     const stockList = document.querySelector("#stock-list");
@@ -71,6 +75,20 @@
       { value: "pajamas", label: "Pajamas" },
       { value: "innerwears", label: "Innerwear" },
       { value: "tops", label: "Tops" }
+    ];
+    const STOREFRONT_IMAGES = [
+      {
+        id: "hero",
+        label: "Welcome hero",
+        alt: "Friends enjoying a sunny day in the city",
+        url: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=2000&q=85"
+      },
+      {
+        id: "story",
+        label: "Our story",
+        alt: "A thoughtfully arranged clothing boutique",
+        url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1100&q=85"
+      }
     ];
     const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
     const IMAGE_TYPES = {
@@ -83,6 +101,7 @@
     let supabase;
     let currentProducts = [];
     let currentCategoryImages = [];
+    let currentSiteImages = [];
 
     function setAuthenticated(authenticated) {
       loginPanel.hidden = authenticated;
@@ -128,6 +147,9 @@
       }
       if (lowerDetail.includes("category_images") && (lowerDetail.includes("does not exist") || lowerDetail.includes("not found") || lowerDetail.includes("schema cache"))) {
         return `${stage} failed: the category photo table is missing. Run supabase/migrations/20260927_category_images.sql in the Supabase SQL Editor. Details: ${detail}`;
+      }
+      if (lowerDetail.includes("storefront_images") && (lowerDetail.includes("does not exist") || lowerDetail.includes("not found") || lowerDetail.includes("schema cache"))) {
+        return `${stage} failed: the storefront feature-photo table is missing. Run supabase/migrations/20260927_storefront_images.sql in the Supabase SQL Editor. Details: ${detail}`;
       }
       if (lowerDetail.includes("payload too large") || lowerDetail.includes("file size") || lowerDetail.includes("maximum") || lowerDetail.includes("413")) {
         return `${stage} failed: the selected image exceeds the storage file-size limit. Each image must be smaller than 8 MB. Details: ${detail}`;
@@ -198,14 +220,20 @@
     }
 
     async function loadProducts() {
-      const [{ data: products, error: productError }, { data: images, error: imageError }] = await Promise.all([
+      const [
+        { data: products, error: productError },
+        { data: images, error: imageError },
+        { data: siteImages, error: siteImageError }
+      ] = await Promise.all([
         supabase.from("products")
           .select("id,name,detail,price,image_url,image_alt,badge,category,stock")
           .order("id"),
         supabase.from("category_images")
           .select("id,category,image_url,image_alt,storage_path,sort_order,created_at")
           .order("sort_order")
-          .order("created_at")
+          .order("created_at"),
+        supabase.from("storefront_images")
+          .select("id,image_url,image_alt,storage_path,updated_at")
       ]);
       if (productError) throw productError;
       currentProducts = products;
@@ -213,6 +241,144 @@
       renderStock();
       currentCategoryImages = imageError ? [] : images;
       renderCategoryImages(imageError ? getCategoryImagesErrorMessage(imageError) : "");
+      currentSiteImages = siteImageError ? [] : siteImages;
+      renderSiteImages(siteImageError ? getSiteImagesErrorMessage(siteImageError) : "");
+    }
+
+    function getSiteImagesErrorMessage(error) {
+      const message = getErrorMessage(error, "Could not load storefront feature photos.");
+      if (error?.code === "42P01" || error?.code === "PGRST205" || /storefront_images.*(?:does not exist|not found)/i.test(message)) {
+        return "Feature photo storage is not set up yet. Run supabase/migrations/20260927_storefront_images.sql in the Supabase SQL Editor.";
+      }
+      return `Feature photos could not be loaded: ${message}`;
+    }
+
+    async function uploadSiteImage(file, imageId) {
+      const imageType = getImageType(file);
+      const validationError = getImageValidationError(file);
+      if (validationError) throw new Error(validationError);
+      const path = `storefront/${imageId}/${crypto.randomUUID()}.${imageType.extension}`;
+      const { data, error } = await supabase.storage.from("product-images").upload(path, file, {
+        cacheControl: "3600",
+        contentType: imageType.mime,
+        upsert: false
+      });
+      if (error) throw error;
+      const { data: publicData } = supabase.storage.from("product-images").getPublicUrl(data.path);
+      return { image_url: publicData.publicUrl, storage_path: data.path };
+    }
+
+    function renderSiteImages(loadError = "") {
+      siteImageList.replaceChildren();
+      STOREFRONT_IMAGES.forEach((definition) => {
+        const saved = currentSiteImages.find((image) => image.id === definition.id);
+        const card = document.createElement("article");
+        card.className = "site-image-editor";
+        card.dataset.imageId = definition.id;
+        const preview = document.createElement("img");
+        preview.className = "site-image-preview";
+        preview.src = saved?.image_url || definition.url;
+        preview.alt = saved?.image_alt || definition.alt;
+
+        const fields = document.createElement("div");
+        fields.className = "site-image-fields";
+        const fileLabel = document.createElement("label");
+        fileLabel.className = "file-picker";
+        fileLabel.textContent = "Upload replacement photo";
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/jpeg,image/png,image/webp,image/gif";
+        fileInput.setAttribute("aria-label", `Upload ${definition.label} photo`);
+        fileLabel.append(fileInput);
+        const imageUrl = makeField("Photo URL", saved?.image_url || definition.url, "url", true);
+        imageUrl.input.placeholder = "https://example.com/photo.jpg";
+        const imageAlt = makeField("Photo description", saved?.image_alt || definition.alt, "text", true);
+        const actions = document.createElement("div");
+        actions.className = "site-image-actions";
+        const save = document.createElement("button");
+        save.className = "primary";
+        save.type = "button";
+        save.textContent = "Save photo";
+        const message = document.createElement("span");
+        message.className = "site-image-message";
+        message.textContent = loadError;
+        actions.append(save, message);
+        fields.append(fileLabel, imageUrl.wrapper, imageAlt.wrapper, actions);
+
+        let previewUrl = "";
+        imageUrl.input.addEventListener("input", () => {
+          if (fileInput.files?.length) {
+            fileInput.value = "";
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            previewUrl = "";
+          }
+          preview.src = imageUrl.input.value.trim() || definition.url;
+          message.textContent = loadError;
+        });
+        preview.addEventListener("error", () => {
+          message.textContent = "Photo preview could not be loaded. Check the URL or upload an image.";
+        });
+        fileInput.addEventListener("change", () => {
+          const file = fileInput.files?.[0];
+          if (!file) return;
+          const validationError = getImageValidationError(file);
+          if (validationError) {
+            message.textContent = validationError;
+            fileInput.value = "";
+            return;
+          }
+          if (previewUrl) URL.revokeObjectURL(previewUrl);
+          previewUrl = URL.createObjectURL(file);
+          preview.src = previewUrl;
+          imageUrl.input.value = "";
+          imageAlt.input.value = file.name.replace(/\.[^.]+$/, "");
+          message.textContent = "Photo selected. Save to publish it.";
+        });
+        save.addEventListener("click", async () => {
+          const file = fileInput.files?.[0];
+          const enteredUrl = imageUrl.input.value.trim();
+          if (!file && !/^https?:\/\//i.test(enteredUrl)) {
+            message.textContent = "Enter an http(s) photo URL or choose an image to upload.";
+            imageUrl.input.focus();
+            return;
+          }
+          save.disabled = true;
+          message.textContent = file ? "Uploading photo…" : "Saving photo…";
+          try {
+            const uploaded = file ? await uploadSiteImage(file, definition.id) : null;
+            const row = {
+              id: definition.id,
+              image_url: uploaded?.image_url || enteredUrl,
+              image_alt: imageAlt.input.value.trim() || definition.alt,
+              storage_path: uploaded?.storage_path || null,
+              updated_at: new Date().toISOString()
+            };
+            const { error } = await supabase.from("storefront_images").upsert(row, { onConflict: "id" });
+            if (error) throw error;
+            if (previewUrl) {
+              URL.revokeObjectURL(previewUrl);
+              previewUrl = "";
+            }
+            currentSiteImages = [
+              ...currentSiteImages.filter((image) => image.id !== definition.id),
+              row
+            ];
+            renderSiteImages();
+            setSiteImageMessage(definition.id, "Photo saved and published.");
+          } catch (error) {
+            message.textContent = describeUploadError(error, file ? "Uploading or saving feature photo" : "Saving feature photo");
+            save.disabled = false;
+          }
+        });
+        card.append(preview, fields);
+        siteImageList.append(card);
+      });
+    }
+
+    function setSiteImageMessage(imageId, text) {
+      const card = Array.from(siteImageList.children).find((item) => item.dataset.imageId === imageId);
+      const message = card?.querySelector(".site-image-message");
+      if (message) message.textContent = text;
     }
 
     async function uploadCategoryImage(file, category) {
@@ -448,6 +614,13 @@
         fields.append(actions);
 
         imageUrl.input.addEventListener("input", () => {
+          if (fileInput.files?.length) {
+            fileInput.value = "";
+            if (productPreviewUrl) {
+              URL.revokeObjectURL(productPreviewUrl);
+              productPreviewUrl = "";
+            }
+          }
           preview.src = imageUrl.input.value;
           message.textContent = "";
         });

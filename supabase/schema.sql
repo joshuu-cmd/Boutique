@@ -21,8 +21,17 @@ create table if not exists public.category_images (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.storefront_images (
+  id text primary key check (id in ('hero', 'story')),
+  image_url text not null,
+  image_alt text not null default '',
+  storage_path text,
+  updated_at timestamptz not null default now()
+);
+
 alter table public.products enable row level security;
 alter table public.category_images enable row level security;
+alter table public.storefront_images enable row level security;
 
 create table if not exists public.store_admins (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -77,6 +86,21 @@ create policy "Store admins can manage category images"
 
 grant select on public.category_images to anon, authenticated;
 grant insert, update, delete on public.category_images to authenticated;
+
+drop policy if exists "Anyone can view storefront images" on public.storefront_images;
+create policy "Anyone can view storefront images"
+  on public.storefront_images for select
+  using (true);
+
+drop policy if exists "Store admins can manage storefront images" on public.storefront_images;
+create policy "Store admins can manage storefront images"
+  on public.storefront_images for all
+  to authenticated
+  using (public.is_store_admin())
+  with check (public.is_store_admin());
+
+grant select on public.storefront_images to anon, authenticated;
+grant insert, update, delete on public.storefront_images to authenticated;
 
 insert into public.products (id, name, detail, price, image_url, image_alt, badge, category, stock)
 values
